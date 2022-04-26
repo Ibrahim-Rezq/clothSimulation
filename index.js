@@ -14,7 +14,7 @@ const gravity = 0.2
 const friction = 0.999
 const bounce = 0.9
 let isStatic = false
-let color = 'green'
+let color = 'black'
 let selected = null
 
 class Point {
@@ -43,8 +43,7 @@ class Stick {
     constructor(pointA, pointB) {
         this.pointA = pointA
         this.pointB = pointB
-        // this.length = getDistance(pointA, pointB)
-        this.length = 20
+        this.length = 15
     }
     draw() {
         ctx.beginPath()
@@ -78,17 +77,50 @@ addEventListener('click', (e) => {
         color,
         isStatic
     )
-    points.push(point)
+    // points.push(point)
 })
+const pos = 15
+const pointsNum = 30
+const offset = 15
+for (let i = 1; i <= pointsNum; i++) {
+    for (let j = 1; j <= pointsNum; j++) {
+        const point = new Point(
+            offset + pos * i,
+            offset + pos * j,
+            offset + pos * i - 1,
+            offset + pos * j - 1,
+            0.5,
+            j == 1 ? 'red' : color,
+            j == 1 && true
+        )
+        points.push(point)
+    }
+}
 
 points.forEach((point, i, array) => {
-    if (i + 1 <= array.length - 1) {
+    if (i + 1 <= array.length - 1 && (i + 1) % pointsNum !== 0) {
         const stick = new Stick(point, array[i + 1])
         sticks.push(stick)
+        if (array[i + pointsNum]) {
+            const stick = new Stick(point, array[i + pointsNum])
+            sticks.push(stick)
+        }
     }
 })
-
 let play = false
+const clipSticks = (e) => {
+    if (e.type === 'mousedown') {
+        sticks.forEach((stick, index) => {
+            if (
+                getDistance(stick.pointA, { x: e.clientX, y: e.clientY }) < 10
+            ) {
+                setTimeout(() => {
+                    sticks.splice(index, 1)
+                }, 0)
+            }
+        })
+    }
+}
 const animate = () => {
     requestAnimationFrame(animate)
     ctx.clearRect(0, 0, width, height)
@@ -99,7 +131,6 @@ const animate = () => {
         const distance = getDistance(stick.pointB, stick.pointA)
         const diffrance = stick.length - distance
         const precent = diffrance / distance / 2
-        console.log(precent)
         offsetX = distanceX * precent
         offsetY = distanceY * precent
         if (!stick.pointA.isStatic) {
@@ -138,4 +169,5 @@ const animate = () => {
         }
     })
 }
+addEventListener('mousedown', clipSticks)
 animate()
