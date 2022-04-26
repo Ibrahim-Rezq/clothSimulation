@@ -80,7 +80,7 @@ addEventListener('click', (e) => {
     // points.push(point)
 })
 const pos = 15
-const pointsNum = 30
+const pointsNum = 20
 const offset = 15
 for (let i = 1; i <= pointsNum; i++) {
     for (let j = 1; j <= pointsNum; j++) {
